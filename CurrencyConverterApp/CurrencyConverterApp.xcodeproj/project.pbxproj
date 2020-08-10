@@ -26,7 +26,6 @@
 		B0B4A69A24E0A10500B22CEA /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B4A69924E0A10500B22CEA /* HomeViewModel.swift */; };
 		B0B4A69C24E0A20100B22CEA /* HomeContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B4A69B24E0A20100B22CEA /* HomeContentView.swift */; };
 		B0B4A6B424E0F7BD00B22CEA /* GPBaseCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B4A6B224E0F7BD00B22CEA /* GPBaseCoordinator.swift */; };
-		B0B4A6BC24E0F84F00B22CEA /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = B0B4A6BB24E0F84F00B22CEA /* SnapKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,7 +92,6 @@
 			files = (
 				B0B4A68B24E0727100B22CEA /* CurrencyConverterUI.framework in Frameworks */,
 				B0B4A68F24E0727400B22CEA /* CurrencyConverterAPI.framework in Frameworks */,
-				B0B4A6BC24E0F84F00B22CEA /* SnapKit in Frameworks */,
 				B03DD9AC24E13FFE004D35F6 /* SwiftyHUDView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -273,7 +271,6 @@
 			);
 			name = CurrencyConverterApp;
 			packageProductDependencies = (
-				B0B4A6BB24E0F84F00B22CEA /* SnapKit */,
 				B03DD9AB24E13FFE004D35F6 /* SwiftyHUDView */,
 			);
 			productName = CurrencyConverterApp;
@@ -349,7 +346,6 @@
 			);
 			mainGroup = B0B4A62524E0208300B22CEA;
 			packageReferences = (
-				B0B4A6BA24E0F84F00B22CEA /* XCRemoteSwiftPackageReference "SnapKit" */,
 				B03DD9AA24E13FFE004D35F6 /* XCRemoteSwiftPackageReference "SwiftyHUDView" */,
 			);
 			productRefGroup = B0B4A62F24E0208300B22CEA /* Products */;
@@ -738,14 +734,6 @@
 				minimumVersion = 0.0.2;
 			};
 		};
-		B0B4A6BA24E0F84F00B22CEA /* XCRemoteSwiftPackageReference "SnapKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.1;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -753,11 +741,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B03DD9AA24E13FFE004D35F6 /* XCRemoteSwiftPackageReference "SwiftyHUDView" */;
 			productName = SwiftyHUDView;
-		};
-		B0B4A6BB24E0F84F00B22CEA /* SnapKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B0B4A6BA24E0F84F00B22CEA /* XCRemoteSwiftPackageReference "SnapKit" */;
-			productName = SnapKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
