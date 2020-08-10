@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "3AA35DDE-2966-48A3-8924-4BAD0AC0B8EC",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:CurrencyConverterAPI.xcodeproj",
+        "identifier" : "B0B4A61324E0206100B22CEA",
+        "name" : "CurrencyConverterAPITests"
+      }
+    }
+  ],
+  "version" : 1
+}
