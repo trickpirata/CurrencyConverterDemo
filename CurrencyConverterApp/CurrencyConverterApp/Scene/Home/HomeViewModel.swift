@@ -91,7 +91,7 @@ class HomeViewModel: ObservableObject  {
         let selectedToCurrency = currencies[selectedCurrencyOutput.value]
         let input = txtSellInput
 
-        if data.value.count == 0, Decimal(string: input)! < currentBalance {
+        if data.value.count == 0 || Decimal(string: input)!.doubleValue > currentBalance.doubleValue {
             return .just(Void())
         }
         self.transactionCount += 1

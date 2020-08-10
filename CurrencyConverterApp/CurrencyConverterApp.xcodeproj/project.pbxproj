@@ -10,6 +10,7 @@
 		B03DD9AC24E13FFE004D35F6 /* SwiftyHUDView in Frameworks */ = {isa = PBXBuildFile; productRef = B03DD9AB24E13FFE004D35F6 /* SwiftyHUDView */; };
 		B03DD9B224E173E0004D35F6 /* TransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03DD9B124E173E0004D35F6 /* TransactionHistory.swift */; };
 		B03DD9B524E18BF1004D35F6 /* DefaultRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03DD9B424E18BF1004D35F6 /* DefaultRule.swift */; };
+		B03DD9B824E19B05004D35F6 /* Decimal+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03DD9B724E19B05004D35F6 /* Decimal+Extensions.swift */; };
 		B0B4A63224E0208300B22CEA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B4A63124E0208300B22CEA /* AppDelegate.swift */; };
 		B0B4A63424E0208300B22CEA /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B4A63324E0208300B22CEA /* SceneDelegate.swift */; };
 		B0B4A63824E0208400B22CEA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B0B4A63724E0208400B22CEA /* Assets.xcassets */; };
@@ -63,6 +64,7 @@
 /* Begin PBXFileReference section */
 		B03DD9B124E173E0004D35F6 /* TransactionHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistory.swift; sourceTree = "<group>"; };
 		B03DD9B424E18BF1004D35F6 /* DefaultRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultRule.swift; sourceTree = "<group>"; };
+		B03DD9B724E19B05004D35F6 /* Decimal+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+Extensions.swift"; sourceTree = "<group>"; };
 		B0B4A62E24E0208300B22CEA /* CurrencyConverterApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CurrencyConverterApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0B4A63124E0208300B22CEA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B0B4A63324E0208300B22CEA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -127,6 +129,14 @@
 				B03DD9B424E18BF1004D35F6 /* DefaultRule.swift */,
 			);
 			path = Rules;
+			sourceTree = "<group>";
+		};
+		B03DD9B624E19AF5004D35F6 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B03DD9B724E19B05004D35F6 /* Decimal+Extensions.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		B0B4A62524E0208300B22CEA = {
@@ -231,6 +241,7 @@
 		B0B4A6B024E0F7A200B22CEA /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				B03DD9B624E19AF5004D35F6 /* Extensions */,
 				B03DD9B324E18BE1004D35F6 /* Rules */,
 				B0B4A6B224E0F7BD00B22CEA /* GPBaseCoordinator.swift */,
 			);
@@ -384,6 +395,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B03DD9B824E19B05004D35F6 /* Decimal+Extensions.swift in Sources */,
 				B03DD9B224E173E0004D35F6 /* TransactionHistory.swift in Sources */,
 				B03DD9B524E18BF1004D35F6 /* DefaultRule.swift in Sources */,
 				B0B4A6B424E0F7BD00B22CEA /* GPBaseCoordinator.swift in Sources */,
