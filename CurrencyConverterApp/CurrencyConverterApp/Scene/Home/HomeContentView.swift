@@ -86,7 +86,7 @@ struct HomeContentView: View {
                             
                 //HUD loader
                 SwiftyHUDView(isShowing: $viewModel.isLoading) {
-                     Text("")
+                     EmptyView()
                 }
             }.navigationBarTitle("Currency Converter")
         }.onAppear(perform: self.setup)
