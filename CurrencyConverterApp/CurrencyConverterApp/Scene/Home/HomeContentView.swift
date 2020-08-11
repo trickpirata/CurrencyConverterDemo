@@ -40,6 +40,7 @@ struct HomeContentView: View {
                 self.viewModel.selectedCurrencyOutput.accept($0)
             }
         )
+        
         return NavigationView {
             ZStack {
                 ScrollView(.vertical, showsIndicators: false) {
@@ -82,15 +83,14 @@ struct HomeContentView: View {
                         
                     }.padding()
                 }
-                .navigationBarTitle("Currency Converter")
-                
+                            
                 //HUD loader
                 SwiftyHUDView(isShowing: $viewModel.isLoading) {
-                     EmptyView()
+                     Text("")
                 }
-            }
-            
+            }.navigationBarTitle("Currency Converter")
         }.onAppear(perform: self.setup)
+        .navigationViewStyle(StackNavigationViewStyle())
         
     }
     
