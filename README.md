@@ -2,7 +2,7 @@
 A demo app that demonstrates the usage of the Exchange Rate API https://api.exchangeratesapi.io/. Built using **Swift 5**, **SwiftUI** and **Xcode 11.3**
 
 # Quick Look
-[![CurrencyConverterDemo](https://s6.gifyu.com/images/CurrencyConverterDemo.gif)](https://gifyu.com/image/BGHV)
+[![CurrencyConverterDemo.th.gif](https://s6.gifyu.com/images/CurrencyConverterDemo.th.gif)](https://gifyu.com/image/BGHV)
 
 # Dependencies
 * RxSwift - https://github.com/ReactiveX/RxSwift.git
