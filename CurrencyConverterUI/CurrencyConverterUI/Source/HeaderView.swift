@@ -12,12 +12,12 @@ public struct HeaderView: View {
     
     private let title: Text
     private let detail: Text?
-    
+
     public var body: some View {
         VStack(alignment: .leading) {
             title
                 .font(.headline)
-                .fontWeight(.semibold)
+                .fontWeight(.bold)
                 
             detail?
                 .font(.caption)
@@ -27,7 +27,7 @@ public struct HeaderView: View {
         
     }
     
-    public init(title: Text,detail: Text?){
+    public init(title: Text, detail: Text?){
         self.title = title
         self.detail = detail
     }

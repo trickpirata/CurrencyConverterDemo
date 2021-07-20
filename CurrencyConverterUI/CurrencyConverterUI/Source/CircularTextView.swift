@@ -21,7 +21,7 @@ public struct CircularTextView: View {
                     .lineLimit(2)
                     .scaledToFit()
                     .minimumScaleFactor(0.5)
-                    .font(.system(size: geo.size.height > geo.size.width ? geo.size.width * 0.4: geo.size.height * 0.4))
+                    .font(.system(size: geo.size.height > geo.size.width ? geo.size.width * 0.2: geo.size.height * 0.2))
                     .foregroundColor(Color.white)
                     .multilineTextAlignment(.center)
                     
@@ -40,7 +40,7 @@ public struct CircularTextView: View {
 #if DEBUG
 struct CircularTextView_Previews: PreviewProvider {
     static var previews: some View {
-        CircularTextView(detail: Text("500 USD")).frame(height: 90)
+        CircularTextView(detail: Text("1000 USD")).frame(height: 90)
     }
 }
 #endif

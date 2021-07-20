@@ -13,9 +13,18 @@ public struct MyBalanceView<Header: View>: View {
     private let header: Header
     private let balance: Text
     
+    // Picker view
+    @State private var expanded = false
+    @Binding var selectedPickerIndex: Int
+    private var currencies = [String]()
+    
+    private var pickerInput: _CurrencyPickerView {
+        _CurrencyPickerView(withCurrencies: currencies, bindingIndex: $selectedPickerIndex)
+    }
+    
     public var body: some View {
         ContentView {
-            VStack {
+            VStack(spacing: 10) {
                 HStack {
                     header.padding([.leading, .top, .trailing])
                     Spacer()
@@ -24,18 +33,38 @@ public struct MyBalanceView<Header: View>: View {
                     balance
                         .font(.largeTitle)
                         .fontWeight(.bold)
-                        .padding()
+                    Text(pickerInput.getCurrencies().count > 0 ? pickerInput.getCurrencies()[selectedPickerIndex] : "")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                    Image(systemName: "chevron.right")
+                        .rotationEffect(.degrees(expanded ? -90 : 90))
+                        .animation(expanded ? .easeOut : .easeIn)
+                        .onTapGesture {
+                            withAnimation(self.expanded ? .easeOut : .easeIn) {
+                                self.expanded.toggle()
+                            }
+                        }
                     Spacer()
+                }.padding([.leading, .bottom])
+                
+                if expanded {
+                    pickerInput
+                        .transition(.opacity)
+                        .padding()
                 }
-                
-                
             }
         }
     }
     
     public init(@ViewBuilder header: () -> Header, @ViewBuilder balance: () -> Text) {
+        self.init(header: header, balance: balance, withCurrencies: [String](), andCurrencyIndexValue: .constant(0))
+    }
+    
+    public init(@ViewBuilder header: () -> Header, @ViewBuilder balance: () -> Text,withCurrencies currencies: [String],andCurrencyIndexValue currencyIndexValue: Binding<Int>) {
         self.header = header()
         self.balance = balance()
+        self.currencies = currencies
+        self._selectedPickerIndex = currencyIndexValue
     }
 }
 
@@ -48,9 +77,9 @@ struct MyBalanceView_Previews: PreviewProvider {
     static var previews: some View {
         MyBalanceView(header: {
             header
-        }) { () -> Text in
-            Text("100 EURO")
-        }
+        }, balance: {
+            Text("100")
+        }, withCurrencies: ["EUR", "USD", "JPY"], andCurrencyIndexValue: .constant(0))
     }
 }
 #endif

@@ -16,9 +16,10 @@ public class GPCurrencyExchangeService: GPAPIService {
         super.init()
     }
     
-    public func getLatestCurrencyExchange(forBaseCurrency baseCurrency: String?) -> Observable<GPExchangeRateResponse> {
-        return self.provider.rx.request(GPAPI.latestExchangeRate(base: baseCurrency))
-        .map(GPExchangeRateResponse.self)
-        .asObservable()
+    public func getExchangeRate(forAmount amount: String, fromCurrency currentCurrency: String, toCurrency newCurrency: String) -> Observable<GPExchangeResponse> {
+        return self.provider.rx.request(GPAPI.exchangeRate(fromAmount: amount, fromCurrency: currentCurrency, toCurrency: newCurrency))
+            .map(GPExchangeResponse.self)
+            .observeOn(ConcurrentDispatchQueueScheduler.init(qos: .background))
+            .asObservable()
     }
 }

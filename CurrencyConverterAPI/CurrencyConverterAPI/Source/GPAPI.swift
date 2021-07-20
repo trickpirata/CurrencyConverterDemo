@@ -10,12 +10,11 @@ import Foundation
 import Moya
 
 struct CONFIG {
-    static let API = "https://api.exchangeratesapi.io"
-    static let API_KEY = "5b237b7e"
+    static let API = "http://api.evp.lt/currency/commercial"
 }
 
 enum GPAPI {
-    case latestExchangeRate(base: String?)
+    case exchangeRate(fromAmount: String, fromCurrency: String, toCurrency: String)
 }
 
 extension GPAPI: TargetType {
@@ -25,14 +24,14 @@ extension GPAPI: TargetType {
     
     var path: String {
         switch self {
-        case .latestExchangeRate:
-            return "/latest"
+        case .exchangeRate(fromAmount: let fromAmount, fromCurrency: let fromCurrency, toCurrency: let toCurrency):
+            return "/exchange/\(fromAmount)-\(fromCurrency)/\(toCurrency)/latest"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .latestExchangeRate:
+        case .exchangeRate:
             return .get
         }
         
@@ -44,10 +43,7 @@ extension GPAPI: TargetType {
     
     var task: Task {
         switch self {
-        case .latestExchangeRate(base: let base):
-            if let b = base {
-                return .requestParameters(parameters: ["base": b], encoding: URLEncoding.default)
-            }
+        case .exchangeRate:
             return .requestPlain
         }
     }
@@ -69,7 +65,7 @@ public func url(route: TargetType) -> String {
 let endpointClosure = { (target: GPAPI) -> Endpoint in
     let defaultEndpoint = MoyaProvider<GPAPI>.defaultEndpointMapping(for: target)
     switch target {
-    case .latestExchangeRate:
+    case .exchangeRate:
         return defaultEndpoint
     }
 }

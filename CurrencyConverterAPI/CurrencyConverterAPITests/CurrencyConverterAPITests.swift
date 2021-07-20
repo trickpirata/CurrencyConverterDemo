@@ -25,20 +25,20 @@ class CurrencyConverterAPITests: XCTestCase {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
         let disposeBag = DisposeBag()
-        let c = GPCurrencyExchangeService()
+        let service = GPCurrencyExchangeService()
         
-        let currencyCallExpectation = expectation(description: "check api currency call")
-        c.getLatestCurrencyExchange()
+        let currencyCallExpectation = expectation(description: "Should display exchange rate")
+        service.getExchangeRate(forAmount: "340.51", fromCurrency: "EUR", toCurrency: "JPY")
             .debug("CurrencyConverterAPITests.testGetCurrencyService")
-            .catchError { (error) -> Observable<GPExchangeRateResponse> in
+            .catchError { (error) -> Observable<GPExchangeResponse> in
                 return .empty()
             }.subscribe(onNext: { (response) in
                 XCTAssertNotNil(response)
-                XCTAssertNotNil(response.date)
-                XCTAssertNotNil(response.rates)
+                XCTAssertNotNil(response.amount)
+                XCTAssertNotNil(response.currency)
                 currencyCallExpectation.fulfill()
             }).disposed(by: disposeBag)
-        
+
         wait(for: [currencyCallExpectation], timeout: 5.0)
     }
 
