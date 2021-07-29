@@ -7,16 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B03DD9A524E138C1004D35F6 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = B03DD9A424E138C1004D35F6 /* RxSwift */; };
-		B03DD9A724E138C1004D35F6 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = B03DD9A624E138C1004D35F6 /* RxCocoa */; };
 		B0612BB326A51EAD00DD76D6 /* GPExchangeRepose.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0612BB226A51EAD00DD76D6 /* GPExchangeRepose.swift */; };
+		B0A86F4126B22E5400CDC42C /* CombineMoya in Frameworks */ = {isa = PBXBuildFile; productRef = B0A86F4026B22E5400CDC42C /* CombineMoya */; };
+		B0A86F4326B22E5400CDC42C /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = B0A86F4226B22E5400CDC42C /* Moya */; };
 		B0B4A61524E0206100B22CEA /* CurrencyConverterAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0B4A60B24E0206100B22CEA /* CurrencyConverterAPI.framework */; };
 		B0B4A61A24E0206100B22CEA /* CurrencyConverterAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B4A61924E0206100B22CEA /* CurrencyConverterAPITests.swift */; };
 		B0B4A61C24E0206100B22CEA /* CurrencyConverterAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = B0B4A60E24E0206100B22CEA /* CurrencyConverterAPI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B0B4A6C024E0F98900B22CEA /* GPAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B4A6BE24E0F98900B22CEA /* GPAPIService.swift */; };
 		B0B4A6C124E0F98900B22CEA /* GPAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B4A6BF24E0F98900B22CEA /* GPAPI.swift */; };
-		B0B4A6C424E0FA2400B22CEA /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = B0B4A6C324E0FA2400B22CEA /* Moya */; };
-		B0B4A6C624E0FA2400B22CEA /* RxMoya in Frameworks */ = {isa = PBXBuildFile; productRef = B0B4A6C524E0FA2400B22CEA /* RxMoya */; };
 		B0B4A6CA24E0FC1000B22CEA /* GPCurrencyExchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B4A6C924E0FC1000B22CEA /* GPCurrencyExchangeService.swift */; };
 /* End PBXBuildFile section */
 
@@ -49,10 +47,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B03DD9A724E138C1004D35F6 /* RxCocoa in Frameworks */,
-				B0B4A6C624E0FA2400B22CEA /* RxMoya in Frameworks */,
-				B03DD9A524E138C1004D35F6 /* RxSwift in Frameworks */,
-				B0B4A6C424E0FA2400B22CEA /* Moya in Frameworks */,
+				B0A86F4326B22E5400CDC42C /* Moya in Frameworks */,
+				B0A86F4126B22E5400CDC42C /* CombineMoya in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,10 +157,8 @@
 			);
 			name = CurrencyConverterAPI;
 			packageProductDependencies = (
-				B0B4A6C324E0FA2400B22CEA /* Moya */,
-				B0B4A6C524E0FA2400B22CEA /* RxMoya */,
-				B03DD9A424E138C1004D35F6 /* RxSwift */,
-				B03DD9A624E138C1004D35F6 /* RxCocoa */,
+				B0A86F4026B22E5400CDC42C /* CombineMoya */,
+				B0A86F4226B22E5400CDC42C /* Moya */,
 			);
 			productName = CurrencyConverterAPI;
 			productReference = B0B4A60B24E0206100B22CEA /* CurrencyConverterAPI.framework */;
@@ -217,8 +211,7 @@
 			);
 			mainGroup = B0B4A60124E0206100B22CEA;
 			packageReferences = (
-				B0B4A6C224E0FA2400B22CEA /* XCRemoteSwiftPackageReference "Moya" */,
-				B03DD9A324E138C1004D35F6 /* XCRemoteSwiftPackageReference "RxSwift" */,
+				B0A86F3F26B22E5400CDC42C /* XCRemoteSwiftPackageReference "Moya" */,
 			);
 			productRefGroup = B0B4A60C24E0206100B22CEA /* Products */;
 			projectDirPath = "";
@@ -522,44 +515,26 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		B03DD9A324E138C1004D35F6 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+		B0A86F3F26B22E5400CDC42C /* XCRemoteSwiftPackageReference "Moya" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
+			repositoryURL = "https://github.com/Moya/Moya";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.1.1;
-			};
-		};
-		B0B4A6C224E0FA2400B22CEA /* XCRemoteSwiftPackageReference "Moya" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Moya/Moya.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 14.0.0;
+				kind = revision;
+				revision = e5a28fb62dd5ff4e17b7025643366550044a40b0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B03DD9A424E138C1004D35F6 /* RxSwift */ = {
+		B0A86F4026B22E5400CDC42C /* CombineMoya */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = B03DD9A324E138C1004D35F6 /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxSwift;
+			package = B0A86F3F26B22E5400CDC42C /* XCRemoteSwiftPackageReference "Moya" */;
+			productName = CombineMoya;
 		};
-		B03DD9A624E138C1004D35F6 /* RxCocoa */ = {
+		B0A86F4226B22E5400CDC42C /* Moya */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = B03DD9A324E138C1004D35F6 /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxCocoa;
-		};
-		B0B4A6C324E0FA2400B22CEA /* Moya */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B0B4A6C224E0FA2400B22CEA /* XCRemoteSwiftPackageReference "Moya" */;
+			package = B0A86F3F26B22E5400CDC42C /* XCRemoteSwiftPackageReference "Moya" */;
 			productName = Moya;
-		};
-		B0B4A6C524E0FA2400B22CEA /* RxMoya */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B0B4A6C224E0FA2400B22CEA /* XCRemoteSwiftPackageReference "Moya" */;
-			productName = RxMoya;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -8,11 +8,13 @@
 
 import Foundation
 import XCTest
-import RxSwift
+import Combine
+
 @testable import CurrencyConverterAPI
 
 class CurrencyConverterAPITests: XCTestCase {
-
+    var cancellable: AnyCancellable?
+    
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -24,29 +26,20 @@ class CurrencyConverterAPITests: XCTestCase {
     func testGetCurrencyService() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
-        let disposeBag = DisposeBag()
         let service = GPCurrencyExchangeService()
-        
+
         let currencyCallExpectation = expectation(description: "Should display exchange rate")
-        service.getExchangeRate(forAmount: "340.51", fromCurrency: "EUR", toCurrency: "JPY")
-            .debug("CurrencyConverterAPITests.testGetCurrencyService")
-            .catchError { (error) -> Observable<GPExchangeResponse> in
-                return .empty()
-            }.subscribe(onNext: { (response) in
+        cancellable = service.getExchangeRate(forAmount: "340.51", fromCurrency: "EUR", toCurrency: "USD")
+            .print()
+            .sink { _ in
+            } receiveValue: { response in
                 XCTAssertNotNil(response)
                 XCTAssertNotNil(response.amount)
                 XCTAssertNotNil(response.currency)
                 currencyCallExpectation.fulfill()
-            }).disposed(by: disposeBag)
+                self.cancellable = nil
+            }
 
-        wait(for: [currencyCallExpectation], timeout: 5.0)
+        waitForExpectations(timeout: 5.0, handler: nil)
     }
-
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
 }

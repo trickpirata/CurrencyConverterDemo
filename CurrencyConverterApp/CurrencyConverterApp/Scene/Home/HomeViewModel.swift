@@ -7,9 +7,7 @@
 //
 
 import CurrencyConverterAPI
-import RxSwift
-import RxCocoa
-import RxOptional
+import Combine
 
 struct AccountBalance: Equatable {
     let id = UUID()
@@ -23,13 +21,19 @@ struct AccountBalance: Equatable {
 }
 
 class HomeViewModel: ObservableObject  {
-    // MARK: - Inputs
-    let load: AnyObserver<Void>
-    let submit: AnyObserver<Void>
+    typealias ConversionResult = Result<AccountBalance?, TransactionValidationError>
     
-    // MARK: - Outputs
-    let didLoad: Observable<Void>
-    let didTapSubmit: Observable<Void>
+    // MARK: - Inputs
+    @Published var txtSellInput = ""
+    @Published var txtSellOutput = ""
+    @Published var selectedBalanceCurrency = 0
+    @Published var selectedCurrencyInput = 0
+    @Published var selectedCurrencyOutput = 0
+    @Published var activeAccountBalance: AccountBalance?
+    @Published var outputMessage = ""
+    @Published var txtBalance = ""
+    @Published var isLoading = false
+    @Published var showConversion = false
     
     // MARK: - Data
     @Published var history = [TransactionHistory]()
@@ -39,163 +43,142 @@ class HomeViewModel: ObservableObject  {
          "JPY"
         ]
     @Published var accountBalances = [AccountBalance]()
-    @Published var isLoading = false
-    @Published var showConversion = false
-    @Published var txtSellInput = ""
-    @Published var txtSellOutput = ""
-    @Published var selectedBalanceCurrency: BehaviorRelay = .init(value: 0)
-    @Published var selectedCurrencyInput: BehaviorRelay = .init(value: 0)
-    @Published var selectedCurrencyOutput: BehaviorRelay = .init(value: 0)
-    @Published var activeAccountBalance: BehaviorRelay<AccountBalance?> = .init(value: nil)
-    @Published var outputMessage = ""
-    @Published var txtBalance = ""
-    
+
     // MARK: - Services
     private lazy var service = GPCurrencyExchangeService()
     
     // MARK: - Utils
-    private let disposeBag = DisposeBag()
+    var cancelBag = Set<AnyCancellable>()
     
     // MARK: - Settings
     private var transactionCount = 0
     
     init() {
-        let _load = PublishSubject<Void>()
-        self.load = _load.asObserver()
-        self.didLoad = _load.asObservable()
-        
-        let _submit = PublishSubject<Void>()
-        self.submit = _submit.asObserver()
-        self.didTapSubmit = _submit.asObservable()
         accountBalances = startingBalance
+        $selectedCurrencyOutput
+            .flatMap { self.preCompute(forCurrency: $0) }
+            .sink { _ in
+                
+            } receiveValue: { value in
+                self.txtSellOutput = value
+            }.store(in: &cancelBag)
+
+        $selectedBalanceCurrency
+            .map { self.accountBalances[$0] }
+            .assign(to: &$activeAccountBalance)
+
+        $selectedCurrencyInput
+            .assign(to: &$selectedBalanceCurrency)
         
-        selectedCurrencyOutput.asObservable()
-            .flatMapLatest({ [weak self](value) -> Observable<Result<String, TransactionValidationError>> in
-                guard let self = self else {
-                    return .empty()
-                }
-                return self.preCompute(forCurrency: value)
-            })
-            .subscribe(onNext: { [weak self](value) in
-                guard let self = self else {
-                    return
-                }
-                switch value {
-                case .success(let amount):
-                    self.txtSellOutput = amount
-                default:
-                    self.txtSellOutput = ""
-                }
-            }).disposed(by: disposeBag)
+        $selectedCurrencyInput
+            .map { self.accountBalances[$0] }
+            .assign(to: &$activeAccountBalance)
         
-        selectedBalanceCurrency
-            .map({ [unowned self] index -> AccountBalance in
-                return self.accountBalances[index]
-            })
-            .bind(to: activeAccountBalance)
-            .disposed(by: disposeBag)
-        selectedCurrencyInput.bind(to: selectedBalanceCurrency).disposed(by: disposeBag)
-        selectedCurrencyInput
-            .map({ [unowned self] index -> AccountBalance in
-                return self.accountBalances[index]
-            })
-            .bind(to: activeAccountBalance)
-            .disposed(by: disposeBag)
-        
-        activeAccountBalance
-            .asObservable()
-            .subscribe(onNext: { [weak self] balance in
-                guard let self = self,
-                      let balance = balance,
-                      let index = self.accountBalances.firstIndex(of: balance)
-                      else { return }
+        $activeAccountBalance
+            .sink { balance in
+                guard let balance = balance,
+                      let index = self.accountBalances.firstIndex(of: balance) else { return }
                 self.accountBalances[index] = balance
                 self.txtBalance = NumberFormatter.currency.string(from: balance.balance as NSDecimalNumber) ?? ""
-            }).disposed(by: disposeBag)
-        
+            }.store(in: &cancelBag)
+
         self.isLoading = false
     }
     
-    func convertCurrency() -> Observable<Result<AccountBalance?, TransactionValidationError>> {
-        let fromCurrency = currencies[selectedCurrencyInput.value]
-        let selectedToCurrency = currencies[selectedCurrencyOutput.value]
+    
+    /// Resets the data to its default value
+    func reset() {
+        accountBalances = startingBalance
+        activeAccountBalance = startingBalance.first
+        history.removeAll()
+    }
+    
+    func convertCurrency() -> AnyPublisher<ConversionResult, TransactionValidationError> {
+        let fromCurrency = currencies[selectedCurrencyInput]
+        let selectedToCurrency = currencies[selectedCurrencyOutput]
         let error = verifyAccount()
-        
+
         if let error = error {
-            return .just(.failure(error))
+            return Just(ConversionResult.failure(error))
+                .setFailureType(to: TransactionValidationError.self)
+                .eraseToAnyPublisher()
+            
         }
-        
+
         self.transactionCount += 1
         self.isLoading = true
         let input = Decimal(string: txtSellInput)!
-        var activeAccountBalance = accountBalances[selectedCurrencyInput.value]
-        var toBalance = accountBalances[selectedCurrencyOutput.value]
-        
+        var activeAccountBalance = accountBalances[selectedCurrencyInput]
+        let toBalance = accountBalances[selectedCurrencyOutput]
+
         let rule = DefaultRule(amount: input.doubleValue, amountOfTries: self.transactionCount)
         
         return service
-            .getExchangeRate(forAmount: txtSellInput, fromCurrency: fromCurrency, toCurrency: selectedToCurrency)
-            .catchError { (error) -> Observable<GPExchangeResponse> in
-                return .empty()
-            }.observeOn(MainScheduler.instance)
-            .flatMapLatest { [weak self]response -> Observable<Result<AccountBalance?, TransactionValidationError>> in
-                guard let self = self else {
-                    return .empty()
-                }
+            .getExchangeRate(forAmount: txtSellInput,
+                                       fromCurrency: fromCurrency,
+                                       toCurrency: selectedToCurrency)
+            .mapError({ error in
+                return .networkingError(error)
+            })
+            .map({ response in
                 self.isLoading = false
-                
+         
                 guard let converted = Decimal(string: response.amount) else {
-                    return .just(.failure(.cannotBeZero))
+                    return .failure(.cannotConvert)
                 }
-                
                 let convertedBalance = converted - Decimal(rule.commissionFee)
                 self.showConversion = true
                 let formatter = NumberFormatter.currency
                 self.txtSellOutput = formatter.string(from: convertedBalance as NSDecimalNumber) ?? ""
                 self.outputMessage = "You have converted \(input) \(fromCurrency) to \(self.txtSellOutput) \(response.currency).\(self.transactionCount > 4 ? " Commission Fee - 0.70 \(fromCurrency)." : "")"
-                
+
                 self.history.append(TransactionHistory(id: UUID(), currency: response.currency, value: convertedBalance, charge: nil))
                 activeAccountBalance.balance -= (input - Decimal(rule.commissionFee))
                 if var newBalance = self.accountBalances.first(where: {$0.id == toBalance.id}) {
                     newBalance.balance += convertedBalance
-                    self.accountBalances[self.selectedCurrencyOutput.value] = newBalance
+                    self.accountBalances[self.selectedCurrencyOutput] = newBalance
                 }
-    
-                self.activeAccountBalance.accept(activeAccountBalance)
-                self.txtBalance = NumberFormatter.currency.string(from: activeAccountBalance.balance as NSDecimalNumber) ?? ""
 
-                return .just(.success(activeAccountBalance))
-            }
+                self.activeAccountBalance = activeAccountBalance
+                self.txtBalance = NumberFormatter.currency.string(from: activeAccountBalance.balance as NSDecimalNumber) ?? ""
+                return .success(activeAccountBalance)
+            })
+            .eraseToAnyPublisher()
     }
     
-    private func preCompute(forCurrency currencyIndex: Int) -> Observable<Result<String, TransactionValidationError>> {
+
+    private func preCompute(forCurrency currencyIndex: Int) -> AnyPublisher<String, TransactionValidationError> {
         if currencies.count == 0 || txtSellInput.count == 0 {
-            return .just(.success("0"))
+            return Just("")
+                .setFailureType(to: TransactionValidationError.self)
+                .eraseToAnyPublisher()
         }
-        let fromCurrency = currencies[selectedCurrencyInput.value]
+        let fromCurrency = currencies[selectedCurrencyInput]
         let selectedToCurrency = currencies[currencyIndex]
         self.isLoading = true
         return service
-            .getExchangeRate(forAmount: txtSellInput, fromCurrency: fromCurrency, toCurrency: selectedToCurrency)
-            .catchError { (error) -> Observable<GPExchangeResponse> in
-                return .empty()
-            }
-            .observeOn(MainScheduler.instance)
-            .flatMapLatest { (response) -> Observable<Result<String, TransactionValidationError>> in
+            .getExchangeRate(forAmount: txtSellInput,
+                                       fromCurrency: fromCurrency,
+                                       toCurrency: selectedToCurrency)
+            .mapError({ error in
+                return .networkingError(error)
+            })
+            .map({ response in
                 self.isLoading = false
-                
-                guard let converted = Decimal(string: response.amount) else {
-                    return .just(.failure(.cannotConvert))
-                }
-            
                 let formatter = NumberFormatter.currency
-                return .just(.success(formatter.string(from: converted as NSDecimalNumber) ?? ""))
-            }
+
+                guard let converted = Decimal(string: response.amount) else {
+                    return ""
+                }
+
+                return formatter.string(from: converted as NSDecimalNumber) ?? ""
+            })
+            .eraseToAnyPublisher()
     }
     
     private func verifyAccount() -> TransactionValidationError? {
-        let selectedFromAccount = accountBalances[selectedCurrencyInput.value]
-        let selectedToAccount = accountBalances[selectedCurrencyOutput.value]
+        let selectedFromAccount = accountBalances[selectedCurrencyInput]
+        let selectedToAccount = accountBalances[selectedCurrencyOutput]
         //if there are no inputs, return error
         guard let input = Decimal(string: txtSellInput) else { return .incompleteDetails }
         

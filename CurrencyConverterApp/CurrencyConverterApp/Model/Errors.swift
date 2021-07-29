@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Moya
 
 enum TransactionValidationError: Error {
     case cannotBeZero
@@ -15,4 +16,5 @@ enum TransactionValidationError: Error {
     case cannotConvert
     case invalid
     case unknown
+    case networkingError(MoyaError)
 }

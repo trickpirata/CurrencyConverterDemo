@@ -7,18 +7,16 @@
 //
 
 import SwiftUI
-import RxSwift
 import CurrencyConverterUI
 import ActivityIndicatorView
+import Combine
 
 struct HomeContentView: View {
     @ObservedObject var viewModel: HomeViewModel
     @Binding private var historyItems: [HistoryViewItem]
-    @Binding private var selectedCurrencyInput: Int
-    @Binding private var selectedCurrencyOutput: Int
-    @Binding private var selectedBalanceCurrency: Int
     @State private var showErrorAlert: (Bool, String?) = (false, nil)
-    private let disposeBag = DisposeBag()
+    @State private var showResetAlert: Bool = false
+    
     var body: some View {
         let history = Binding<[HistoryViewItem]>(
             get: {
@@ -33,38 +31,6 @@ struct HomeContentView: View {
             }
         )
         
-        //Workaround for RxSwift + SwiftUI binding
-        let currencyInput = Binding<Int>(
-            get: {
-                self.viewModel.selectedCurrencyInput.value
-            },
-            set: {
-                self.selectedCurrencyInput = $0
-                self.viewModel.selectedCurrencyInput.accept($0)
-            }
-        )
-        
-        let currencyOutput = Binding<Int>(
-            get: {
-                self.viewModel.selectedCurrencyOutput.value
-            },
-            set: {
-                self.selectedCurrencyOutput = $0
-                self.viewModel.selectedCurrencyOutput.accept($0)
-            }
-        )
-        
-        let selectedBalance = Binding<Int>(
-            get: {
-                self.viewModel.selectedBalanceCurrency.value
-            },
-            set: {
-                self.selectedBalanceCurrency = $0
-                self.viewModel.selectedBalanceCurrency.accept($0)
-            }
-        )
-        
-        
         return NavigationView {
             ZStack {
                 ScrollView(.vertical, showsIndicators: false) {
@@ -75,16 +41,28 @@ struct HomeContentView: View {
                         }, balance: {
                             Text("\(self.viewModel.txtBalance)")
                         }, withCurrencies: self.viewModel.currencies,
-                        andCurrencyIndexValue: selectedBalance)
+                        andCurrencyIndexValue: $viewModel.selectedBalanceCurrency)
                         
                         //User input for currency exchange
                         CurrencyExchangeView(header: {
                             HeaderView(title: Text("Currency Exchange"), detail: nil)
                         }, detail: {
-                            CurrencyExchangeInputView(image: Image("imgSell"), title: Text("Sell"), withCurrencies: self.viewModel.currencies, withValue: self.$viewModel.txtSellInput, andCurrencyIndexValue: currencyInput)
-                            CurrencyExchangeInputView(image: Image("imgReceive"), title: Text("Buy"), withCurrencies: self.viewModel.currencies, withValue: self.$viewModel.txtSellOutput, andCurrencyIndexValue: currencyOutput, disableInput: true)
+                            CurrencyExchangeInputView(image: Image("imgSell"),
+                                                      title: Text("Sell"),
+                                                      withCurrencies: viewModel.currencies,
+                                                      withValue: $viewModel.txtSellInput,
+                                                      andCurrencyIndexValue: $viewModel.selectedCurrencyInput)
+                            
+                            CurrencyExchangeInputView(image: Image("imgReceive"),
+                                                      title: Text("Buy"),
+                                                      withCurrencies: viewModel.currencies,
+                                                      withValue: $viewModel.txtSellOutput,
+                                                      andCurrencyIndexValue: $viewModel.selectedCurrencyOutput,
+                                                      disableInput: true)
                         }).alert(isPresented: self.$showErrorAlert.0, content: {
-                            return Alert(title: Text("Ooops"), message: Text(self.showErrorAlert.1 ?? "An unexpected error occurred."), dismissButton: .default(Text("OK")))
+                            return Alert(title: Text("Ooops"),
+                                         message: Text(self.showErrorAlert.1 ?? "An unexpected error occurred."),
+                                         dismissButton: .default(Text("OK")))
                         })
                         
                         
@@ -93,19 +71,58 @@ struct HomeContentView: View {
                             HeaderView(title: Text("History"), detail: Text("Your balances."))
                         }, withItems: history)
                         
-                        //Submit button
-                        Button(action: {
-                            self.viewModel.submit.onNext(())
-                        }) {
-                            Text("Submit")
-                        }
-                        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 50)
-                        .foregroundColor(.white)
-                        .background(Color.accentColor)
-                        .cornerRadius(40)
-                        .padding()
-                        .alert(isPresented: self.$viewModel.showConversion) { () -> Alert in
-                            return Alert(title: Text("Currency converted"), message: Text(viewModel.outputMessage), dismissButton: .default(Text("OK")))
+                        //Bottom Buttons
+                        VStack(spacing: 5.0) {
+                            //Submit button
+                            Button(action: {
+                                viewModel.convertCurrency().sink { _ in
+                                    
+                                } receiveValue: { result in
+                                    switch result {
+                                    case .failure(.unknown):
+                                        self.showErrorAlert = (true, "Unknown error occurred")
+                                    case .failure(.cannotBeZero):
+                                        self.showErrorAlert = (true, "Current balance cannot be zero")
+                                    case .failure(.inputLower):
+                                        self.showErrorAlert = (true, "Sell order is high than your current balance.")
+                                    case .failure(.incompleteDetails):
+                                        self.showErrorAlert = (true, "Please fill all required details")
+                                    case .failure(.networkingError(let error)):
+                                        self.showErrorAlert = (true, error.localizedDescription)
+                                    default:
+                                        break
+                                    }
+                                }.store(in: &viewModel.cancelBag)
+
+                            }) {
+                                Text("Submit")
+                            }
+                            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 50)
+                            .foregroundColor(.white)
+                            .background(Color.accentColor)
+                            .cornerRadius(40)
+                            .alert(isPresented: self.$viewModel.showConversion) { () -> Alert in
+                                return Alert(title: Text("Currency converted"), message: Text(viewModel.outputMessage), dismissButton: .default(Text("OK")))
+                            }
+                            
+                            //Reset button
+                            Button(action: {
+                                showResetAlert.toggle()
+                            }) {
+                                Text("Reset")
+                            }
+                            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 50)
+                            .foregroundColor(.white)
+                            .background(Color.red)
+                            .cornerRadius(40)
+                            .alert(isPresented: $showResetAlert) { () -> Alert in
+                                return Alert(title: Text("Wait!"),
+                                             message: Text("Are you sure you want to reset the data?"),
+                                             primaryButton: .cancel(Text("Cancel")),
+                                             secondaryButton: .destructive(Text("Reset"), action: {
+                                                viewModel.reset()
+                                             }))
+                            }
                         }
                         
                         
@@ -119,31 +136,31 @@ struct HomeContentView: View {
                 
             }.navigationBarTitle("Currency Converter")
 
-        }.onAppear(perform: self.setup)
+        }
         .navigationViewStyle(StackNavigationViewStyle())
         
     }
     
     private func setup() {
-        viewModel.didTapSubmit
-            .flatMapLatest({ (_) -> Observable<Result<AccountBalance?, TransactionValidationError>> in
-                return self.viewModel.convertCurrency()
-            })
-            .asDriver(onErrorJustReturn: .failure(.unknown))
-            .drive(onNext: { result in
-                switch result {
-                case .failure(.unknown):
-                    self.showErrorAlert = (true, "Unknown error occurred")
-                case .failure(.cannotBeZero):
-                    self.showErrorAlert = (true, "Current balance cannot be zero")
-                case .failure(.inputLower):
-                    self.showErrorAlert = (true, "Sell order is high than your current balance.")
-                case .failure(.incompleteDetails):
-                    self.showErrorAlert = (true, "Please fill all required details")
-                default:
-                    break
-                }
-            }).disposed(by: disposeBag)
+//        viewModel.didTapSubmit
+//            .flatMapLatest({ (_) -> Observable<Result<AccountBalance?, TransactionValidationError>> in
+//                return self.viewModel.convertCurrency()
+//            })
+//            .asDriver(onErrorJustReturn: .failure(.unknown))
+//            .drive(onNext: { result in
+//                switch result {
+//                case .failure(.unknown):
+//                    self.showErrorAlert = (true, "Unknown error occurred")
+//                case .failure(.cannotBeZero):
+//                    self.showErrorAlert = (true, "Current balance cannot be zero")
+//                case .failure(.inputLower):
+//                    self.showErrorAlert = (true, "Sell order is high than your current balance.")
+//                case .failure(.incompleteDetails):
+//                    self.showErrorAlert = (true, "Please fill all required details")
+//                default:
+//                    break
+//                }
+//            }).disposed(by: disposeBag)
 
     }
 }
@@ -152,9 +169,6 @@ extension HomeContentView {
     public init(model: HomeViewModel,historyItems: Binding<[HistoryViewItem]> = .constant([]),currencyOutputIndex: Binding<Int> = .constant(0)) {
         self.viewModel = model
         self._historyItems = historyItems
-        self._selectedCurrencyOutput = currencyOutputIndex
-        self._selectedBalanceCurrency = .constant(0)
-        self._selectedCurrencyInput = .constant(0)
     }
 }
 

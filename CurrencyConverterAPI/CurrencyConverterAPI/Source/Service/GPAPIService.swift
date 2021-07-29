@@ -8,7 +8,6 @@
 
 import Foundation
 import Moya
-import RxSwift
 
 private func JSONResponseDataFormatter(_ data: Data) -> String {
     do {
@@ -22,7 +21,6 @@ private func JSONResponseDataFormatter(_ data: Data) -> String {
 
 public class GPAPIService: NSObject {
     var provider: MoyaProvider<GPAPI>!
-    let disposeBag = DisposeBag()
 
     override init(){
         super.init()
@@ -33,5 +31,10 @@ public class GPAPIService: NSObject {
                                             plugins:  [NetworkLoggerPlugin(configuration: .init(formatter: .init(responseData: JSONResponseDataFormatter),
                                             logOptions: .verbose))])
     }
+}
 
+private extension GPAPIService {
+    private func request<T: Decodable>(target: GPAPI, completion: @escaping(Result<T, Error>) -> ()) {
+        
+    }
 }

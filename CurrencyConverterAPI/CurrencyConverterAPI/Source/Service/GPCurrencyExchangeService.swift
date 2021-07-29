@@ -7,19 +7,23 @@
 //
 
 import Foundation
-import RxSwift
-import RxMoya
+import Moya
+import CombineMoya
+import Combine
 
 public class GPCurrencyExchangeService: GPAPIService {
     
     public override init(){
         super.init()
     }
-    
-    public func getExchangeRate(forAmount amount: String, fromCurrency currentCurrency: String, toCurrency newCurrency: String) -> Observable<GPExchangeResponse> {
-        return self.provider.rx.request(GPAPI.exchangeRate(fromAmount: amount, fromCurrency: currentCurrency, toCurrency: newCurrency))
+
+    public func getExchangeRate(forAmount amount: String, fromCurrency currentCurrency: String, toCurrency newCurrency: String) -> AnyPublisher<GPExchangeResponse, MoyaError> {
+        return self.provider
+            .requestPublisher(GPAPI.exchangeRate(fromAmount: amount, fromCurrency: currentCurrency, toCurrency: newCurrency))
             .map(GPExchangeResponse.self)
-            .observeOn(ConcurrentDispatchQueueScheduler.init(qos: .background))
-            .asObservable()
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
+    
+
 }

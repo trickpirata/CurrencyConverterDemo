@@ -12,7 +12,6 @@
 		B03DD9B824E19B05004D35F6 /* Decimal+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03DD9B724E19B05004D35F6 /* Decimal+Extensions.swift */; };
 		B0612BB526A5FBFE00DD76D6 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0612BB426A5FBFE00DD76D6 /* Result.swift */; };
 		B0612BB726A5FCAA00DD76D6 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0612BB626A5FCAA00DD76D6 /* Errors.swift */; };
-		B0612BBA26A62EB800DD76D6 /* RxOptional in Frameworks */ = {isa = PBXBuildFile; productRef = B0612BB926A62EB800DD76D6 /* RxOptional */; };
 		B0612BBC26A6312D00DD76D6 /* Unown.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0612BBB26A6312D00DD76D6 /* Unown.swift */; };
 		B0612BC226A661D200DD76D6 /* ActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = B0612BC126A661D200DD76D6 /* ActivityIndicatorView */; };
 		B0B4A63224E0208300B22CEA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B4A63124E0208300B22CEA /* AppDelegate.swift */; };
@@ -98,7 +97,6 @@
 				B0B4A68F24E0727400B22CEA /* CurrencyConverterAPI.framework in Frameworks */,
 				B0EBAF95267BDE9F001F83BC /* CurrencyConverterUI.framework in Frameworks */,
 				B0612BC226A661D200DD76D6 /* ActivityIndicatorView in Frameworks */,
-				B0612BBA26A62EB800DD76D6 /* RxOptional in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -278,7 +276,6 @@
 			);
 			name = CurrencyConverterApp;
 			packageProductDependencies = (
-				B0612BB926A62EB800DD76D6 /* RxOptional */,
 				B0612BC126A661D200DD76D6 /* ActivityIndicatorView */,
 			);
 			productName = CurrencyConverterApp;
@@ -354,7 +351,6 @@
 			);
 			mainGroup = B0B4A62524E0208300B22CEA;
 			packageReferences = (
-				B0612BB826A62EB800DD76D6 /* XCRemoteSwiftPackageReference "RxOptional" */,
 				B0612BC026A661D200DD76D6 /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */,
 			);
 			productRefGroup = B0B4A62F24E0208300B22CEA /* Products */;
@@ -579,7 +575,7 @@
 				DEVELOPMENT_TEAM = 59DTPWDE56;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = CurrencyConverterApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -600,7 +596,7 @@
 				DEVELOPMENT_TEAM = 59DTPWDE56;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = CurrencyConverterApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -738,14 +734,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		B0612BB826A62EB800DD76D6 /* XCRemoteSwiftPackageReference "RxOptional" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/RxSwiftCommunity/RxOptional.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.3;
-			};
-		};
 		B0612BC026A661D200DD76D6 /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/exyte/ActivityIndicatorView.git";
@@ -757,11 +745,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B0612BB926A62EB800DD76D6 /* RxOptional */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B0612BB826A62EB800DD76D6 /* XCRemoteSwiftPackageReference "RxOptional" */;
-			productName = RxOptional;
-		};
 		B0612BC126A661D200DD76D6 /* ActivityIndicatorView */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B0612BC026A661D200DD76D6 /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */;
