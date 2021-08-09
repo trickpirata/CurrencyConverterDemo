@@ -37,18 +37,19 @@ class HomeViewModel: ObservableObject  {
     // MARK: - Services
     private lazy var service = GPCurrencyExchangeService()
     
-    // MARK: - Utils
-    var cancelBag = Set<AnyCancellable>()
-    
     // MARK: - Settings
     private var transactionCount = 0
+    
+    // MARK: - Utils
+    var cancelBag = Set<AnyCancellable>()
+    private let precomputeTimer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
     
     init() {
         accountBalances = startingBalance
         
         //Precompute
         Publishers
-            .CombineLatest($selectedCurrencyOutput, $txtSellInput)
+            .CombineLatest3($selectedCurrencyOutput, $txtSellInput, precomputeTimer)
             .flatMap { self.preCompute(forCurrency: $0.0, $0.1) }
             .sink { _ in
                 
@@ -75,8 +76,6 @@ class HomeViewModel: ObservableObject  {
                 self.txtBalance = NumberFormatter.currency.string(from: balance.balance as NSDecimalNumber) ?? ""
             }.store(in: &cancelBag)
         
-       
-
         self.isLoading = false
     }
     
@@ -150,7 +149,6 @@ class HomeViewModel: ObservableObject  {
         }
         let fromCurrency = currencies[selectedCurrencyInput]
         let selectedToCurrency = currencies[currencyIndex]
-        self.isLoading = true
         return service
             .getExchangeRate(forAmount: input,
                                        fromCurrency: fromCurrency,
@@ -159,7 +157,6 @@ class HomeViewModel: ObservableObject  {
                 return .networkingError(error)
             })
             .map({ response in
-                self.isLoading = false
                 let formatter = NumberFormatter.currency
 
                 guard let converted = Decimal(string: response.amount) else {
