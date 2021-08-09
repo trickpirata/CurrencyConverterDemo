@@ -9,16 +9,6 @@
 import CurrencyConverterAPI
 import Combine
 
-struct AccountBalance: Equatable {
-    let id = UUID()
-    var balance: Decimal
-    var currency: String
-    
-    static func == (lhs: AccountBalance, rhs: AccountBalance) -> Bool {
-        if (lhs.id ==  rhs.id) { return true }
-        return false
-    }
-}
 
 class HomeViewModel: ObservableObject  {
     typealias ConversionResult = Result<AccountBalance?, TransactionValidationError>
@@ -130,7 +120,7 @@ class HomeViewModel: ObservableObject  {
                 self.showConversion = true
                 let formatter = NumberFormatter.currency
                 self.txtSellOutput = formatter.string(from: convertedBalance as NSDecimalNumber) ?? ""
-                self.outputMessage = "You have converted \(input) \(fromCurrency) to \(self.txtSellOutput) \(response.currency).\(self.transactionCount > 4 ? " Commission Fee - 0.70 \(fromCurrency)." : "")"
+                self.outputMessage = "You have converted \(input) \(fromCurrency) to \(self.txtSellOutput) \(response.currency).\(self.transactionCount > 4 ? " Commission Fee - \(rule.commissionFee.roundToTwoDecimal()) \(fromCurrency)." : "")"
 
                 self.history.append(TransactionHistory(id: UUID(), currency: response.currency, value: convertedBalance, charge: nil))
                 activeAccountBalance.balance -= (input - Decimal(rule.commissionFee))
@@ -140,7 +130,7 @@ class HomeViewModel: ObservableObject  {
                 }
 
                 self.activeAccountBalance = activeAccountBalance
-                self.txtBalance = NumberFormatter.currency.string(from: activeAccountBalance.balance as NSDecimalNumber) ?? ""
+                self.txtBalance = formatter.string(from: activeAccountBalance.balance as NSDecimalNumber) ?? ""
                 return .success(activeAccountBalance)
             })
             .eraseToAnyPublisher()
