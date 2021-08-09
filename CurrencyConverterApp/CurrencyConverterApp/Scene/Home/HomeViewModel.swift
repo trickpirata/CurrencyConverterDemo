@@ -9,9 +9,35 @@
 import CurrencyConverterAPI
 import Combine
 
+typealias ConversionResult = Result<AccountBalance?, TransactionValidationError>
 
-class HomeViewModel: ObservableObject  {
-    typealias ConversionResult = Result<AccountBalance?, TransactionValidationError>
+protocol HomeViewModel: ObservableObject {
+    var txtSellInput: String { get set }
+    var txtSellOutput: String { get set }
+    var selectedBalanceCurrency: Int { get set }
+    var selectedCurrencyInput: Int { get set }
+    var selectedCurrencyOutput: Int { get set }
+    var activeAccountBalance: AccountBalance? { get set }
+    var outputMessage: String { get set }
+    var txtBalance: String { get set }
+    var isLoading: Bool { get set }
+    var showConversion: Bool { get set }
+    var history: [TransactionHistory] { get }
+    var currencies: [String] { get }
+    var cancelBag: Set<AnyCancellable> { get set }
+    
+    func currentBalances() -> [AccountBalance]
+    func convertCurrency(withRule rule: Rule) -> AnyPublisher<ConversionResult, TransactionValidationError>
+    func reset()
+}
+
+extension HomeViewModelImp {
+    func currentBalances() -> [AccountBalance] {
+        return startingBalance
+    }
+}
+
+class HomeViewModelImp: HomeViewModel  {
     
     // MARK: - Inputs
     @Published var txtSellInput = ""
@@ -45,7 +71,7 @@ class HomeViewModel: ObservableObject  {
     private let precomputeTimer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
     
     init() {
-        accountBalances = startingBalance
+        accountBalances = currentBalances()
         
         //Precompute
         Publishers
@@ -87,7 +113,7 @@ class HomeViewModel: ObservableObject  {
         history.removeAll()
     }
     
-    func convertCurrency() -> AnyPublisher<ConversionResult, TransactionValidationError> {
+    func convertCurrency(withRule rule: Rule) -> AnyPublisher<ConversionResult, TransactionValidationError> {
         let fromCurrency = currencies[selectedCurrencyInput]
         let selectedToCurrency = currencies[selectedCurrencyOutput]
         let error = verifyAccount()
@@ -104,8 +130,6 @@ class HomeViewModel: ObservableObject  {
         let input = Decimal(string: txtSellInput)!
         var activeAccountBalance = accountBalances[selectedCurrencyInput]
         let toBalance = accountBalances[selectedCurrencyOutput]
-
-        let rule = DefaultRule(amount: input.doubleValue, amountOfTries: self.transactionCount)
         
         return service
             .getExchangeRate(forAmount: txtSellInput,
@@ -115,19 +139,21 @@ class HomeViewModel: ObservableObject  {
                 return .networkingError(error)
             })
             .map({ response in
-                self.isLoading = false
-         
                 guard let converted = Decimal(string: response.amount) else {
                     return .failure(.cannotConvert)
                 }
-                let convertedBalance = converted - Decimal(rule.commissionFee)
-                self.showConversion = true
+                let commissionFee = rule.computeCommissionFee(forAmount: input.doubleValue, numberOfTries: self.transactionCount)
+                
+                let convertedBalance = converted - Decimal(commissionFee)
                 let formatter = NumberFormatter.currency
                 self.txtSellOutput = formatter.string(from: convertedBalance as NSDecimalNumber) ?? ""
-                self.outputMessage = "You have converted \(input) \(fromCurrency) to \(self.txtSellOutput) \(response.currency).\(self.transactionCount > 4 ? " Commission Fee - \(rule.commissionFee.roundToTwoDecimal()) \(fromCurrency)." : "")"
+                
+                self.outputMessage = "You have converted \(input) \(fromCurrency) to \(self.txtSellOutput) \(response.currency).\(self.transactionCount > 4 ? " Commission Fee - \(commissionFee.roundToTwoDecimal()) \(fromCurrency)." : "")"
 
                 self.history.append(TransactionHistory(id: UUID(), currency: response.currency, value: convertedBalance, charge: nil))
-                activeAccountBalance.balance -= (input - Decimal(rule.commissionFee))
+                let activeNewBalance = input.doubleValue - commissionFee
+                activeAccountBalance.balance -= Decimal(activeNewBalance)
+                
                 if var newBalance = self.accountBalances.first(where: {$0.id == toBalance.id}) {
                     newBalance.balance += convertedBalance
                     self.accountBalances[self.selectedCurrencyOutput] = newBalance
@@ -135,12 +161,14 @@ class HomeViewModel: ObservableObject  {
 
                 self.activeAccountBalance = activeAccountBalance
                 self.txtBalance = formatter.string(from: activeAccountBalance.balance as NSDecimalNumber) ?? ""
+                
+                self.showConversion = true
+                self.isLoading = false
                 return .success(activeAccountBalance)
             })
             .eraseToAnyPublisher()
     }
-    
-
+   
     private func preCompute(forCurrency currencyIndex: Int,_ input: String) -> AnyPublisher<String, TransactionValidationError> {
         if currencies.count == 0 || input.count == 0 {
             return Just("")

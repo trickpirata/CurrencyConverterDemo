@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		B03DD9B224E173E0004D35F6 /* TransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03DD9B124E173E0004D35F6 /* TransactionHistory.swift */; };
-		B03DD9B524E18BF1004D35F6 /* DefaultRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03DD9B424E18BF1004D35F6 /* DefaultRule.swift */; };
 		B03DD9B824E19B05004D35F6 /* Decimal+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03DD9B724E19B05004D35F6 /* Decimal+Extensions.swift */; };
 		B0612BB526A5FBFE00DD76D6 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0612BB426A5FBFE00DD76D6 /* Result.swift */; };
 		B0612BB726A5FCAA00DD76D6 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0612BB626A5FCAA00DD76D6 /* Errors.swift */; };
@@ -29,6 +28,8 @@
 		B0B4A69C24E0A20100B22CEA /* HomeContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B4A69B24E0A20100B22CEA /* HomeContentView.swift */; };
 		B0EB3D6026C157B500EFB5E3 /* Double+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EB3D5F26C157B500EFB5E3 /* Double+Extensions.swift */; };
 		B0EB3D6226C158CD00EFB5E3 /* AccountBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EB3D6126C158CD00EFB5E3 /* AccountBalance.swift */; };
+		B0EB3D6726C16DA200EFB5E3 /* Rule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EB3D6626C16DA200EFB5E3 /* Rule.swift */; };
+		B0EB3D6926C16E7400EFB5E3 /* StandardRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EB3D6826C16E7400EFB5E3 /* StandardRule.swift */; };
 		B0EBAF95267BDE9F001F83BC /* CurrencyConverterUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0B4A68A24E0727100B22CEA /* CurrencyConverterUI.framework */; };
 /* End PBXBuildFile section */
 
@@ -66,7 +67,6 @@
 
 /* Begin PBXFileReference section */
 		B03DD9B124E173E0004D35F6 /* TransactionHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistory.swift; sourceTree = "<group>"; };
-		B03DD9B424E18BF1004D35F6 /* DefaultRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultRule.swift; sourceTree = "<group>"; };
 		B03DD9B724E19B05004D35F6 /* Decimal+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+Extensions.swift"; sourceTree = "<group>"; };
 		B0612BB426A5FBFE00DD76D6 /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		B0612BB626A5FCAA00DD76D6 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
@@ -90,6 +90,8 @@
 		B0B4A69B24E0A20100B22CEA /* HomeContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContentView.swift; sourceTree = "<group>"; };
 		B0EB3D5F26C157B500EFB5E3 /* Double+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Extensions.swift"; sourceTree = "<group>"; };
 		B0EB3D6126C158CD00EFB5E3 /* AccountBalance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountBalance.swift; sourceTree = "<group>"; };
+		B0EB3D6626C16DA200EFB5E3 /* Rule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rule.swift; sourceTree = "<group>"; };
+		B0EB3D6826C16E7400EFB5E3 /* StandardRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardRule.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,7 +137,8 @@
 		B03DD9B324E18BE1004D35F6 /* Rules */ = {
 			isa = PBXGroup;
 			children = (
-				B03DD9B424E18BF1004D35F6 /* DefaultRule.swift */,
+				B0EB3D6626C16DA200EFB5E3 /* Rule.swift */,
+				B0EB3D6826C16E7400EFB5E3 /* StandardRule.swift */,
 			);
 			path = Rules;
 			sourceTree = "<group>";
@@ -405,13 +408,14 @@
 				B0612BB526A5FBFE00DD76D6 /* Result.swift in Sources */,
 				B03DD9B824E19B05004D35F6 /* Decimal+Extensions.swift in Sources */,
 				B03DD9B224E173E0004D35F6 /* TransactionHistory.swift in Sources */,
-				B03DD9B524E18BF1004D35F6 /* DefaultRule.swift in Sources */,
 				B0B4A63224E0208300B22CEA /* AppDelegate.swift in Sources */,
 				B0B4A63424E0208300B22CEA /* SceneDelegate.swift in Sources */,
+				B0EB3D6926C16E7400EFB5E3 /* StandardRule.swift in Sources */,
 				B0B4A69C24E0A20100B22CEA /* HomeContentView.swift in Sources */,
 				B0612BBC26A6312D00DD76D6 /* Unown.swift in Sources */,
 				B0612BB726A5FCAA00DD76D6 /* Errors.swift in Sources */,
 				B0EB3D6026C157B500EFB5E3 /* Double+Extensions.swift in Sources */,
+				B0EB3D6726C16DA200EFB5E3 /* Rule.swift in Sources */,
 				B0EB3D6226C158CD00EFB5E3 /* AccountBalance.swift in Sources */,
 				B0B4A69A24E0A10500B22CEA /* HomeViewModel.swift in Sources */,
 			);

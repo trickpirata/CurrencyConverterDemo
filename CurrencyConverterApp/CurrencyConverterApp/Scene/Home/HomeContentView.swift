@@ -11,8 +11,8 @@ import CurrencyConverterUI
 import ActivityIndicatorView
 import Combine
 
-struct HomeContentView: View {
-    @ObservedObject var viewModel: HomeViewModel
+struct HomeContentView<ViewModel>: View where ViewModel: HomeViewModel {
+    @ObservedObject var viewModel: ViewModel
     @Binding private var historyItems: [HistoryViewItem]
     @State private var showErrorAlert: (Bool, String?) = (false, nil)
     @State private var showResetAlert: Bool = false
@@ -75,7 +75,7 @@ struct HomeContentView: View {
                         VStack(spacing: 5.0) {
                             //Submit button
                             Button(action: {
-                                viewModel.convertCurrency().sink { _ in
+                                viewModel.convertCurrency(withRule: StandardRule()).sink { _ in
                                     
                                 } receiveValue: { result in
                                     switch result {
@@ -140,34 +140,11 @@ struct HomeContentView: View {
         .navigationViewStyle(StackNavigationViewStyle())
         
     }
-    
-    private func setup() {
-//        viewModel.didTapSubmit
-//            .flatMapLatest({ (_) -> Observable<Result<AccountBalance?, TransactionValidationError>> in
-//                return self.viewModel.convertCurrency()
-//            })
-//            .asDriver(onErrorJustReturn: .failure(.unknown))
-//            .drive(onNext: { result in
-//                switch result {
-//                case .failure(.unknown):
-//                    self.showErrorAlert = (true, "Unknown error occurred")
-//                case .failure(.cannotBeZero):
-//                    self.showErrorAlert = (true, "Current balance cannot be zero")
-//                case .failure(.inputLower):
-//                    self.showErrorAlert = (true, "Sell order is high than your current balance.")
-//                case .failure(.incompleteDetails):
-//                    self.showErrorAlert = (true, "Please fill all required details")
-//                default:
-//                    break
-//                }
-//            }).disposed(by: disposeBag)
-
-    }
 }
 
 extension HomeContentView {
-    public init(model: HomeViewModel,historyItems: Binding<[HistoryViewItem]> = .constant([]),currencyOutputIndex: Binding<Int> = .constant(0)) {
-        self.viewModel = model
+    public init(model: HomeViewModelImp,historyItems: Binding<[HistoryViewItem]> = .constant([]),currencyOutputIndex: Binding<Int> = .constant(0)) {
+        self.viewModel = model as! ViewModel
         self._historyItems = historyItems
     }
 }
@@ -175,7 +152,7 @@ extension HomeContentView {
 #if DEBUG
 struct HomeContentView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeContentView(model: HomeViewModel())
+        HomeContentView<HomeViewModelImp>(model: HomeViewModelImp())
     }
 }
 #endif
