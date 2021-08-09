@@ -32,9 +32,3 @@ public class GPAPIService: NSObject {
                                             logOptions: .verbose))])
     }
 }
-
-private extension GPAPIService {
-    private func request<T: Decodable>(target: GPAPI, completion: @escaping(Result<T, Error>) -> ()) {
-        
-    }
-}

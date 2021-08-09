@@ -45,12 +45,15 @@ class HomeViewModel: ObservableObject  {
     
     init() {
         accountBalances = startingBalance
-        $selectedCurrencyOutput
-            .flatMap { self.preCompute(forCurrency: $0) }
+        
+        //Precompute
+        Publishers
+            .CombineLatest($selectedCurrencyOutput, $txtSellInput)
+            .flatMap { self.preCompute(forCurrency: $0.0, $0.1) }
             .sink { _ in
                 
-            } receiveValue: { value in
-                self.txtSellOutput = value
+            } receiveValue: { precomputedValue in
+                self.txtSellOutput = precomputedValue
             }.store(in: &cancelBag)
 
         $selectedBalanceCurrency
@@ -71,6 +74,8 @@ class HomeViewModel: ObservableObject  {
                 self.accountBalances[index] = balance
                 self.txtBalance = NumberFormatter.currency.string(from: balance.balance as NSDecimalNumber) ?? ""
             }.store(in: &cancelBag)
+        
+       
 
         self.isLoading = false
     }
@@ -137,8 +142,8 @@ class HomeViewModel: ObservableObject  {
     }
     
 
-    private func preCompute(forCurrency currencyIndex: Int) -> AnyPublisher<String, TransactionValidationError> {
-        if currencies.count == 0 || txtSellInput.count == 0 {
+    private func preCompute(forCurrency currencyIndex: Int,_ input: String) -> AnyPublisher<String, TransactionValidationError> {
+        if currencies.count == 0 || input.count == 0 {
             return Just("")
                 .setFailureType(to: TransactionValidationError.self)
                 .eraseToAnyPublisher()
@@ -147,7 +152,7 @@ class HomeViewModel: ObservableObject  {
         let selectedToCurrency = currencies[currencyIndex]
         self.isLoading = true
         return service
-            .getExchangeRate(forAmount: txtSellInput,
+            .getExchangeRate(forAmount: input,
                                        fromCurrency: fromCurrency,
                                        toCurrency: selectedToCurrency)
             .mapError({ error in
